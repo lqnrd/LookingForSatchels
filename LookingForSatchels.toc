@@ -1,0 +1,8 @@
+## Interface: 70200
+## Author: lqnrd
+## Title: LookingForSatchels
+## Version: 0.9
+## SavedVariablesPerCharacter: LookingForSatchelsOptions
+## Notes: LookingForSatchels
+
+LookingForSatchels.lua

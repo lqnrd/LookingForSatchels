@@ -1,0 +1,36 @@
+2015-12-11 LFS v0.1
+* initial upload
+
+2015-12-12 LFS v0.2
+* now remembers roles and watch list between sessions
+
+2015-12-19 LFS v0.3
+* New option to show a popup when a satchel has been found. The popup lets you queue for that dungeon without the need to click through the Blizzard UI.
+* While in combat or in a group, the popup will be shown after leaving combat/leaving the group. (can't solo queue while in RaidFinder)
+* The popup will hide again on its own, if you won't get a satchel for a dungeon.
+* Use shift+click on a popup button to queue/not queue AND remove that dungeon from your watch list. Might be useful if you only want to do each RaidFinder wing once a week.
+* New right-click interaction with the search status indicator: Rescan all instances (use if you declined a popup by accident)
+* Keep the feedback coming!
+
+2015-12-19 LFS v0.4
+* new option to play a sound when a satchel is found
+* see description for available sound files
+
+2016-01-01 LFS v0.5
+* New option to quickly toggle scanning (shift+click on the search indicator, or use "/lfs togglescan"). The indicator will turn grey when scanning is paused.
+
+2016-01-23 LFS v0.6
+* New option to show/hide the indicator (/lfs show and /lfs hide)
+* By pressing Shift while clicking on the L+ button on a Raidfinder instance, all available Raidfinder wings will be added to the watch list.
+* By pressing Ctrl while clicking on the L+ button on a Raidfinder instance, all Raidfinder wings will be removed from the watch list.
+* The popup will now be hidden upon joining group, if it is still up.
+
+2016-03-18 LFS v0.7
+* New option to ignore instances which no longer reward valor points (/lfs first) (thx oscarucb)
+
+2016-04-03 LFS v0.8
+* Automatically hide popup when combat starts (would otherwise stay on top until combat drops)
+
+2016-05-10 LFS v0.9
+* Moveable popup. Reset position using "/lfs resetpopup"
+
