@@ -7,19 +7,19 @@ I installed the addon. What now?
 
 1. Set your role(s) to scan
 
-Type `/lfs roles x x x` (where `x` is either `0` or `1`) to define if you want to scan for Tank, Heal and/or Damage (in that order). `/lfs roles 0 1 0` for example will scan for Heal only. `/lfs roles 1 0 1` will scan for Tank and Damage, but not for Heal.
+    Type `/lfs roles x x x` (where `x` is either `0` or `1`) to define if you want to scan for Tank, Heal and/or Damage (in that order). `/lfs roles 0 1 0` for example will scan for Heal only. `/lfs roles 1 0 1` will scan for Tank and Damage, but not for Heal.
 
 2. Select dungeons
 
-Open the Dungeon Finder window, select the dungeon(s) you want to scan, and press the L+ button for each dungeon to add them to your watch list. When the Raidfinder window is open, you can SHIFT-Click the L+ button to add all Raidfinder wings to the watch list.
+    Open the Dungeon Finder window, select the dungeon(s) you want to scan, and press the L+ button for each dungeon to add them to your watch list. When the Raidfinder window is open, you can SHIFT-Click the L+ button to add all Raidfinder wings to the watch list.
 
 3. Select role(s) to queue
 
-In any Dungeon Finder window select the role(s) you want to queue for. These are not the roles being scanned! You can scan for Tank only, but queue for Tank/Damage.
+    In any Dungeon Finder window select the role(s) you want to queue for. These are not the roles being scanned! You can scan for Tank only, but queue for Tank/Damage.
 
 4. Done
 
-Sit back and wait for the addon to find a satchel. For more options, like what the "L" in the center of the screen is for, how you can move/hide/interact with it and more, read below!
+    Sit back and wait for the addon to find a satchel. For more options, like what the "L" in the center of the screen is for, how you can move/hide/interact with it and more, read below!
 
 ## General functions
 
@@ -68,11 +68,11 @@ Control+Left-Click: clear watch list
 
 Right-Click: Rescan all instances. Useful if you dismissed a popup window by accident.
 
--
+---
 
 Go ahead, tab out of the game, watch [your favourite YouTube video](https://www.youtube.com/watch?v=J---aiyznGQ) and get back when it's time to grab the monies!
 
--
+---
 
 Future plans:
 
