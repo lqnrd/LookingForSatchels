@@ -1,16 +1,17 @@
 local expLeg = select(4, GetBuildInfo()) >= 70000
 --[[ LookingForSatchels ]]
 
---TODOs:
--- localization
--- minimap button
--- tooltip
--- watch list: separate roles per dungeon
--- one-click-queue: use separate roles per dungeon to queue for, not blizzard's roles
--- LDB
--- movable popup
--- (a) add all dungeons (b) add all dungeons that give valor points (c) remove all dungeons
--- hide popup when joining a group
+--[[
+TODOs:
+- localization
+- minimap button
+- watch list: separate roles per dungeon
+- one-click-queue: use separate roles per dungeon to queue for, not blizzard's roles
+- LDB
+- movable popup
+- (a) add all dungeons (b) add all dungeons that give valor points (c) remove all dungeons
+- hide popup when joining a group
+--]]
 
 local DefaultO = {
   ["framePoint"] = "CENTER";
@@ -24,7 +25,7 @@ local DefaultO = {
   ["frameOffsetXPopup"] = 0;
   ["frameOffsetYPopup"] = 0;
   ["showPopup"] = true;
-  ["showFrame"] = 1;
+  ["showFrame"] = 0;
   ["playSound"] = 1;
   ["soundName"] = "LOOTWINDOWCOINSOUND";
   ["scanActive"] = 1;
@@ -76,6 +77,45 @@ local function initFrame()
     O["frameRelativePoint"] = relativePoint or "CENTER"
     O["frameOffsetX"] = xOfs
     O["frameOffsetY"] = yOfs
+  end);
+  frame:SetScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+    GameTooltip:AddLine("|cffaaaaffLookingForSatchels "..(GetAddOnMetadata("LookingForSatchels", "Version") or "").."|r")
+    
+    if O.scanActive == 1 then
+      GameTooltip:AddDoubleLine("Scan (shift-click to toggle):", "active", 1, 1, 1, 0.67, 1, 0.67)
+    else
+      GameTooltip:AddDoubleLine("Scan (shift-click to toggle):", "paused", 1, 1, 1, 1, 0.53, 0.53)
+    end
+    
+    local countLFD, countScenario, countLFR = 0, 0, 0
+    for _, v in pairs(self.LFG_dungeonIDs) do
+      if v.status and (v.status >= 1) then
+        if v.lfgCategory == "LFD" then
+          countLFD = countLFD + 1
+        elseif v.lfgCategory == "Scenario" then
+          countScenario = countScenario + 1
+        elseif v.lfgCategory == "RaidFinder" then
+          countLFR = countLFR + 1
+        end
+      end
+    end
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine("|cffffffffwatch list:|r")
+    GameTooltip:AddDoubleLine("  Dungeons:", countLFD, 1, 1, 1, 1, 1, 1)
+    GameTooltip:AddDoubleLine("  Scenarios:", countScenario, 1, 1, 1, 1, 1, 1)
+    GameTooltip:AddDoubleLine("  LFR wings:", countLFR, 1, 1, 1, 1, 1, 1)
+    
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine("|cffffffffRight-click to rescan|r")
+    GameTooltip:AddLine("|cffffffffControl-click to clear watch list|r")
+    
+    GameTooltip:Show()
+  end);
+  frame:SetScript("OnLeave", function(self)
+    if GameTooltip:IsVisible() then
+      GameTooltip:Hide()
+    end
   end);
   
   frame.joinLFG_popupQueue = {};
@@ -169,7 +209,6 @@ local function initFrame()
     O.showFrame = b
   end
   
-  --[ [
   frame:EnableMouse(true)
   frame:SetScript("OnMouseUp", function(self, button)
     self:handleMouseUp(0, button)
@@ -177,6 +216,8 @@ local function initFrame()
   frame.handleMouseUp = function(self, barIndex, button)
     if button == "LeftButton" and IsShiftKeyDown() then
       frame.toggleScan()
+    elseif button == "LeftButton" and IsControlKeyDown() then
+      frame.removeAllLFGIds()
     elseif button == "RightButton" then
       print("|cffaaaaffLookingForSatchels: Rescan...")
       for k, v in pairs(self.LFG_dungeonIDs) do
@@ -187,7 +228,6 @@ local function initFrame()
       RequestLFDPlayerLockInfo()
     end
   end
-  --] ]
   
   --------------------
   --LFG satchel grabber
@@ -237,6 +277,19 @@ local function initFrame()
     local name = GetLFGDungeonInfo(dungeonID)
     print(format("|cffaaaaffLookingForSatchels: removed LFG search for: %s", name))
     O.LFG_dungeonIDs = frame.LFG_dungeonIDs
+    
+    frame.updateDisplay()
+    
+    --update L+ buttons
+    for i, b in ipairs(frame.frameLFGSearchButtons) do
+      b:updateStatus()
+    end
+  end
+  frame.removeAllLFGIds = function()
+    frame.LFG_dungeonIDs = {};
+    frame.watchListNotEmpty = false
+    O.LFG_dungeonIDs = frame.LFG_dungeonIDs
+    print("|cffaaaaffLookingForSatchels: Watch list cleared.")
     
     frame.updateDisplay()
     
@@ -329,6 +382,35 @@ local function initFrame()
       end
     end);
     
+    b:SetScript("OnEnter", function(self)
+      GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+      GameTooltip:AddLine("|cffaaaaffLFS|r")
+      
+      if (self.lfgCategory == "LFD") or (self.lfgCategory == "Scenario") then
+        if self.status == 0 then
+          GameTooltip:AddLine("|cffffffffAdd to watch list|r")
+        else
+          GameTooltip:AddLine("|cffffffffRemove from watch list|r")
+        end
+      elseif self.lfgCategory == "RaidFinder" then
+        if self.status == 0 then
+          GameTooltip:AddLine("|cffffffffClick: Add to watch list|r")
+        else
+          GameTooltip:AddLine("|cffffffffClick: Remove from watch list|r")
+        end
+        GameTooltip:AddLine(" ")
+        GameTooltip:AddLine("|cffffffffShift-click: add all RaidFinder wings to watch list|r")
+        GameTooltip:AddLine("|cffffffffControl-click: remove all RaidFinder wings from watch list|r")
+      end
+      
+      GameTooltip:Show()
+    end);
+    b:SetScript("OnLeave", function(self)
+      if GameTooltip:IsVisible() then
+        GameTooltip:Hide()
+      end
+    end);
+    
     b:SetNormalFontObject("GameFontNormal")
     
     local ntex = b:CreateTexture()
@@ -350,7 +432,6 @@ local function initFrame()
     b:SetPushedTexture(ptex)
   end
   
-  --[ [
   frame.hook_LFGRewardsFrame_UpdateFrame = function(parentFrame, dungeonID, background)
     if (type(dungeonID) == "number") and not LFGIsIDHeader(dungeonID) then
       local v = frame.LFG_dungeonIDs[dungeonID]
@@ -368,7 +449,6 @@ local function initFrame()
     end
   end
   hooksecurefunc("LFGRewardsFrame_UpdateFrame", frame.hook_LFGRewardsFrame_UpdateFrame)
-  --] ]
   
   --------------------
   --frame text
@@ -411,7 +491,6 @@ local function initFrame()
   --popup frame
   --------------------
   
-  --popupFrame:SetPoint("CENTER", UIParent, "CENTER")
   popupFrame:SetPoint(O.framePointPopup, O.frameRelativeToPopup, O.frameRelativePointPopup, O.frameOffsetXPopup, O.frameOffsetYPopup)
   popupFrame:SetFrameStrata("DIALOG")
   popupFrame:SetSize(POPUP_MINWIDTH, 70+22)
@@ -638,7 +717,7 @@ function frameEvents:PLAYER_REGEN_DISABLED()
     --can't hide in combat
     frame.joinLFG_popupQueue_showNext_afterCombat = true
     popupFrame:Hide()
-    print("do it later!")
+    --print("do it later!")
   end
 end
 function frameEvents:PLAYER_REGEN_ENABLED()

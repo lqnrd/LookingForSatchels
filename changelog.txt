@@ -34,3 +34,7 @@
 2016-05-10 LFS v0.9
 * Moveable popup. Reset position using "/lfs resetpopup"
 
+2017-08-06 LFS v0.10
+* indicator is now hidden by default
+* added tooltips to indicator and L+ buttons showing scan status and available options
+

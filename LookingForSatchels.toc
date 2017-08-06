@@ -1,7 +1,7 @@
 ## Interface: 70200
 ## Author: lqnrd
 ## Title: LookingForSatchels
-## Version: 0.9
+## Version: 0.10
 ## SavedVariablesPerCharacter: LookingForSatchelsOptions
 ## Notes: LookingForSatchels
 
