@@ -52,6 +52,8 @@ To change the sound file enter `/lfs sound`, followed by the sound name:
 
 This will change the sound to `LOOTWINDOWCOINSOUND`. See [this link](http://wowwiki.wikia.com/wiki/API_PlaySound) for available sound files.
 
+WoW patch 7.3 and later use a number instead of a string for the sound file. The command will stay the same, you can even now use it with a number to prepare for the patch. `/lfs sound 120` will play the same coin sound as before. See [this link](https://wow.gamepedia.com/API_PlaySound) for available sound files post 7.3 (shown as "soundKitID").
+
 `/lfs togglescan` or shift+click on the search indicator: quickly toggle scanning on/off
 
 `/lfs first` toggle whether require first-run (valor) reward, to ignore a satchel when you already completed that dungeon/raid finder wing this day/week.

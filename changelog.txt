@@ -38,3 +38,9 @@
 * indicator is now hidden by default
 * added tooltips to indicator and L+ buttons showing scan status and available options
 
+2017-08-07 LFS v0.11
+* bugfix for ancient code when resetting the indicator's position
+* should be 7.3 ready
+* The soundfile will be reset, and with 7.3 will then be a number instead of a string. See updated description for available sound files
+* remove old compat code
+

@@ -1,17 +1,4 @@
-local expLeg = select(4, GetBuildInfo()) >= 70000
---[[ LookingForSatchels ]]
-
---[[
-TODOs:
-- localization
-- minimap button
-- watch list: separate roles per dungeon
-- one-click-queue: use separate roles per dungeon to queue for, not blizzard's roles
-- LDB
-- movable popup
-- (a) add all dungeons (b) add all dungeons that give valor points (c) remove all dungeons
-- hide popup when joining a group
---]]
+local expLeg72 = PlaySoundKitID--select(4, GetBuildInfo()) <= 70200
 
 local DefaultO = {
   ["framePoint"] = "CENTER";
@@ -28,6 +15,7 @@ local DefaultO = {
   ["showFrame"] = 0;
   ["playSound"] = 1;
   ["soundName"] = "LOOTWINDOWCOINSOUND";
+  ["soundId"] = 120; --SOUNDKIT.LOOT_WINDOW_COIN_SOUND
   ["scanActive"] = 1;
   ["LFG_dungeonIDs"] = {
     --[[
@@ -53,6 +41,9 @@ local moving = false
 local POPUP_MINWIDTH = 166
 
 
+local function MyPlaySound()
+  PlaySound(expLeg72 and O.soundName or O.soundId, "master")
+end
 
 local function initFrame()
   frame:SetPoint(O["framePoint"], O["frameRelativeTo"], O["frameRelativePoint"], O["frameOffsetX"], O["frameOffsetY"])
@@ -61,11 +52,7 @@ local function initFrame()
   
   frame.bgtexture = frame:CreateTexture(nil, "OVERLAY")
   frame.bgtexture:SetAllPoints(frame)
-  if expLeg then
-    frame.bgtexture:SetColorTexture(0, 0, 0, 1)
-  else
-    frame.bgtexture:SetTexture(0, 0, 0, 1)
-  end
+  frame.bgtexture:SetColorTexture(0, 0, 0, 1)
   frame.bgtexture:Hide()
   
   frame:SetScript("OnDragStart", function(self) self:StartMoving(); end);
@@ -511,11 +498,7 @@ local function initFrame()
 
   popupFrame.bgtexture = popupFrame:CreateTexture(nil, "BACKGROUND")
   popupFrame.bgtexture:SetAllPoints(popupFrame)
-  if expLeg then
-    popupFrame.bgtexture:SetColorTexture(0, 0, 0, 0.8)
-  else
-    popupFrame.bgtexture:SetTexture(0, 0, 0, 0.8)
-  end
+  popupFrame.bgtexture:SetColorTexture(0, 0, 0, 0.8)
   popupFrame.bgtexture:Show()
 
   popupFrame.text = popupFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -609,6 +592,7 @@ function frameEvents:PLAYER_ENTERING_WORLD(...)
   
   O.playSound = O.playSound or DefaultO.playSound
   O.soundName = O.soundName or DefaultO.soundName
+  O.soundId = O.soundId or DefaultO.soundId
   
   O.scanActive = O.scanActive or DefaultO.scanActive
   O.showFrame = O.showFrame or DefaultO.showFrame
@@ -686,7 +670,7 @@ function frameEvents:LFG_UPDATE_RANDOM_INFO()
             if not frame.LFGsearchLastScanFoundReward then
               FlashClientIcon()
               if O.playSound then
-                PlaySound(O.soundName, "master")
+                MyPlaySound()
               end
               frame.LFGsearchLastScanFoundReward = true
             end
@@ -822,14 +806,14 @@ SlashCmdList["LOOKINGFORSATCHELS"] = function(msg, editbox)
     frame.toggleFrame(1)
     print("|cffaaaaffLookingForSatchels |rindicator shown")
   elseif string.lower(args[1] or "") == "reset" then
-    LookingForSatchels["framePoint"] = DefaultO["framePoint"]
-    LookingForSatchels["frameRelativeTo"] = DefaultO["frameRelativeTo"]
-    LookingForSatchels["frameRelativePoint"] = DefaultO["frameRelativePoint"]
-    LookingForSatchels["frameOffsetX"] = DefaultO["frameOffsetX"]
-    LookingForSatchels["frameOffsetY"] = DefaultO["frameOffsetY"]
+    O["framePoint"] = DefaultO["framePoint"]
+    O["frameRelativeTo"] = DefaultO["frameRelativeTo"]
+    O["frameRelativePoint"] = DefaultO["frameRelativePoint"]
+    O["frameOffsetX"] = DefaultO["frameOffsetX"]
+    O["frameOffsetY"] = DefaultO["frameOffsetY"]
     
     frame:ClearAllPoints()
-    frame:SetPoint(LookingForSatchels["framePoint"], LookingForSatchels["frameRelativeTo"], LookingForSatchels["frameRelativePoint"], LookingForSatchels["frameOffsetX"], LookingForSatchels["frameOffsetY"])
+    frame:SetPoint(O["framePoint"], O["frameRelativeTo"], O["frameRelativePoint"], O["frameOffsetX"], O["frameOffsetY"])
     
     print("|cffaaaaffLookingForSatchels |rposition reset")
   elseif string.lower(args[1] or "") == "resetpopup" then
@@ -866,12 +850,30 @@ SlashCmdList["LOOKINGFORSATCHELS"] = function(msg, editbox)
     print("|cffaaaaffLookingForSatchels |rplaysound |cffaaaaffis "..(O.playSound == 1 and "|cffaaffaaenabled" or "|cffff8888disabled"))
   elseif string.lower(args[1] or "") == "sound" then
     if args[2] then
-      O.soundName = args[2]
-      print("|cffaaaaffLookingForSatchels |rsound |cffaaaaffchanged to: |r"..args[2])
+      if not expLeg72 then
+        if args[2]:match("^%d+$") then
+          O.soundId = tonumber(args[2])
+          print("|cffaaaaffLookingForSatchels |rsound |cffaaaaffchanged to: |r"..O.soundId)
+        else
+          print("|cffaaaaffLookingForSatchels |rsound |cffaaaaffmust be a number")
+        end
+      else
+        if args[2]:match("^%d+$") then
+          O.soundId = tonumber(args[2])
+          print("|cffaaaaffLookingForSatchels |rsound id |cffaaaaffchanged to: |r"..O.soundId)
+        else
+          O.soundName = args[2]
+          print("|cffaaaaffLookingForSatchels |rsound |cffaaaaffchanged to: |r"..O.soundName)
+        end
+      end
     else
-      print("|cffaaaaffLookingForSatchels |rsound |cffaaaaffis: |r"..O.soundName)
+      if not expLeg72 then
+        print("|cffaaaaffLookingForSatchels |rsound |cffaaaaffis: |r"..O.soundId)
+      else
+        print("|cffaaaaffLookingForSatchels |rsound |cffaaaaffis: |r"..O.soundName)
+      end
     end
-    PlaySound(O.soundName, "master")
+    MyPlaySound()
   elseif string.lower(args[1] or "") == "togglescan" then
     frame.toggleScan()
   else
