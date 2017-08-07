@@ -36,39 +36,39 @@ Ingame you have the option to show a one-click-queue popup which lets you queue 
 ![one click queue](Screenshots/q1450538474926lk.lfs.queue.popup.jpg)
 
 ## Command Options
-`/lfs` for command options.
+- `/lfs` for command options.
 
-`/lfs roles <tank> <heal> <damage>` Replace the roles with `0`s and `1`s, `1` meaning the addon will search for that role.
+- `/lfs roles <tank> <heal> <damage>` Replace the roles with `0`s and `1`s, `1` meaning the addon will search for that role.
 
-Example: `/lfs roles 1 0 1` will tell you when you get a special reward for tanking or dealing damage, but will ignore rewards for healers.
+    Example: `/lfs roles 1 0 1` will tell you when you get a special reward for tanking or dealing damage, but will ignore rewards for healers.
 
-`/lfs move` to move the search indicator around. Red: No dungeon selected. Yellow: Searching. Green: Satchel found. Grey: Scanning paused.
+- `/lfs move` to move the search indicator around. Red: No dungeon selected. Yellow: Searching. Green: Satchel found. Grey: Scanning paused.
 
-`/lfs hide` if you want to hide the indicator (`/lfs show` to show it again).
+- `/lfs hide` if you want to hide the indicator (`/lfs show` to show it again).
 
-To change the sound file enter `/lfs sound`, followed by the sound name:
+- To change the sound file enter `/lfs sound`, followed by the sound name:
 
-`/lfs sound LOOTWINDOWCOINSOUND`
+    `/lfs sound LOOTWINDOWCOINSOUND`
 
-This will change the sound to `LOOTWINDOWCOINSOUND`. See [this link](http://wowwiki.wikia.com/wiki/API_PlaySound) for available sound files.
+    This will change the sound to `LOOTWINDOWCOINSOUND`. See [this link](http://wowwiki.wikia.com/wiki/API_PlaySound) for available sound files.
 
-WoW patch 7.3 and later use a number instead of a string for the sound file. The command will stay the same, you can even now use it with a number to prepare for the patch. `/lfs sound 120` will play the same coin sound as before. See [this link](https://wow.gamepedia.com/API_PlaySound) for available sound files post 7.3 (shown as "soundKitID").
+    WoW patch 7.3 and later use a number instead of a string for the sound file. The command will stay the same, you can even now use it with a number to prepare for the patch. `/lfs sound 120` will play the same coin sound as before. See [this link](https://wow.gamepedia.com/API_PlaySound) for available sound files post 7.3 (shown as "soundKitID").
 
-`/lfs togglescan` or shift+click on the search indicator: quickly toggle scanning on/off
+- `/lfs togglescan` or shift+click on the search indicator: quickly toggle scanning on/off
 
-`/lfs first` toggle whether require first-run (valor) reward, to ignore a satchel when you already completed that dungeon/raid finder wing this day/week.
+- `/lfs first` toggle whether require first-run (valor) reward, to ignore a satchel when you already completed that dungeon/raid finder wing this day/week.
 
 ## Search Indicator Options
 
 The "L" in the center of the screen is a status indicator and shows what the addon is doing at the moment.
 
-Red color: No dungeon selected. Yellow color: Searching. Green color: Satchel found. Grey color: Scanning paused.
+- Red color: No dungeon selected. Yellow color: Searching. Green color: Satchel found. Grey color: Scanning paused.
 
-Shift+Left-Click: toggle scanning
+- Shift+Left-Click: toggle scanning
 
-Control+Left-Click: clear watch list
+- Control+Left-Click: clear watch list
 
-Right-Click: Rescan all instances. Useful if you dismissed a popup window by accident.
+- Right-Click: Rescan all instances. Useful if you dismissed a popup window by accident.
 
 ---
 
