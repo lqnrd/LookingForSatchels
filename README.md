@@ -40,6 +40,7 @@ Ingame you have the option to show a one-click-queue popup which lets you queue 
 - `/lfs` for command options.
 
 - `/lfs roles ‹tank› ‹heal› ‹damage›` Replace the roles with `0`s and `1`s, `1` meaning the addon will search for that role.
+
     Example: `/lfs roles 1 0 1` will tell you when you get a special reward for tanking or dealing damage, but will ignore rewards for healers.
 
 - `/lfs move` to move the search indicator around. Red: No dungeon selected. Yellow: Searching. Green: Satchel found. Grey: Scanning paused.
