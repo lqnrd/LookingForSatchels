@@ -85,4 +85,3 @@ Future plans:
 
 integrate the indicator functionality into a Minimap button,
 separate roles per dungeon (e.g. search for Tank-satchel in Random Heroic Dungeon and Heal-satchel in RaidFinder),
-add roles to one-click-queue popup (mirror the dungeon finder's behaviour, to check and change the roles you want to queue for)
