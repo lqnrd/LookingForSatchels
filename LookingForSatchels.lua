@@ -524,6 +524,7 @@ local function initFrame()
     
     retButton:SetText(text)
     retButton:SetNormalFontObject("GameFontNormal")
+    retButton:SetDisabledFontObject("GameFontDisable")
     
     local ntex = retButton:CreateTexture()
     ntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
@@ -542,14 +543,20 @@ local function initFrame()
     ptex:SetTexCoord(0, 0.625, 0, 0.6875)
     ptex:SetAllPoints()
     retButton:SetPushedTexture(ptex)
+    
+    local dtex = retButton:CreateTexture()
+    dtex:SetTexture("Interface/Buttons/UI-Panel-Button-Disabled")
+    dtex:SetTexCoord(0, 0.625, 0, 0.6875)
+    dtex:SetAllPoints()
+    retButton:SetDisabledTexture(dtex)
 
     retButton:Show()
     
     return retButton
   end
   
-  popupFrame.buttonsYES = newButton(popupFrame, "TOPRIGHT", popupFrame, "TOPLEFT", POPUP_MINWIDTH/2-1, -22*2, 80, 22, "Yes")
-  popupFrame.buttonsNO = newButton(popupFrame, "TOPLEFT", popupFrame, "TOPLEFT", POPUP_MINWIDTH/2+1, -22*2, 80, 22, "No")
+  popupFrame.buttonsYES = newButton(popupFrame, "TOPRIGHT", popupFrame, "TOPLEFT", POPUP_MINWIDTH/2-1, -26*2, 80, 22, "Yes")
+  popupFrame.buttonsNO = newButton(popupFrame, "TOPLEFT", popupFrame, "TOPLEFT", POPUP_MINWIDTH/2+1, -26*2, 80, 22, "No")
   
   popupFrame.buttonsYES:SetAttribute("type", "macro")
   popupFrame.buttonsYES:SetAttribute("macrotext", [[/run LookingForSatchelsFrame.joinLFG(LookingForSatchelsFrame.joinLFG_lastDungeonID, LookingForSatchelsFrame.joinLFG_lastLfgCategory, IsShiftKeyDown())]])
@@ -557,12 +564,86 @@ local function initFrame()
   popupFrame.buttonsNO:SetAttribute("type", "macro")
   popupFrame.buttonsNO:SetAttribute("macrotext", [[/run LookingForSatchelsFrame.dequeueJoinLFG(LookingForSatchelsFrame.joinLFG_lastDungeonID, LookingForSatchelsFrame.joinLFG_lastLfgCategory, IsShiftKeyDown())]])
   
+  popupFrame.roleButtonsFrame = CreateFrame("Frame", nil, popupFrame)
+  popupFrame.roleButtonsFrame:SetPoint("TOP", popupFrame, "TOP", 0, -29)
+  popupFrame.roleButtonsFrame:SetSize(3*(24+22+2),22)
+  
+  popupFrame.roleButtons = {};
+  local roles = {
+    {"Tank","TANK"},
+    {"Heal","HEALER"},
+    {"Damage","DAMAGER"},
+  };
+  for i,v in ipairs(roles) do
+    local rb = CreateFrame("CheckButton", "LookingForSatchelsRoleCheckButton"..i, popupFrame.roleButtonsFrame, "ChatConfigCheckButtonTemplate")
+    rb:SetPoint("TOPLEFT", popupFrame.roleButtonsFrame, "TOPLEFT", (24+22+2)*(i-1), 0)
+    popupFrame.roleButtons[i] = rb
+    _G[(rb:GetName()).."Text"]:SetText("")
+    rb.tag = i
+    rb.role = v[2]
+    
+    local goldTex = rb:CreateTexture()
+    rb.goldTex = goldTex
+    goldTex:SetTexture("Interface/Icons/INV_Misc_Coin_17")
+    goldTex:SetPoint("TOPLEFT",rb,"TOPLEFT",4,-4)
+    goldTex:SetPoint("BOTTOMRIGHT",rb,"BOTTOMRIGHT",-4,4)
+    goldTex:SetDrawLayer("BORDER", -1)
+    
+    local roleTex = rb:CreateTexture()
+    rb.roleTex = roleTex
+    roleTex:SetTexture("Interface/LFGFrame/UI-LFG-ICONS-ROLEBACKGROUNDS")
+    roleTex:SetTexCoord(GetBackgroundTexCoordsForRole(v[2]))
+    roleTex:SetPoint("TOPLEFT",rb,"TOPLEFT",22,0)
+    roleTex:SetSize(20,20)
+    
+    rb:SetHitRectInsets(0,-20,0,0)
+    rb.tooltip = v[1]
+    rb:SetScript("OnClick", function(self)
+      local r = {GetLFGRoles()}
+      r[self.tag+1] = self:GetChecked()
+      SetLFGRoles(unpack(r))
+      popupFrame:updateYESButtonStatus()
+    end)
+  end
+  
+  popupFrame.updateYESButtonStatus = function(self)
+    local _, t, h, d = GetLFGRoles()
+    if t or h or d then
+      self.buttonsYES:Enable()
+    else
+      self.buttonsYES:Disable()
+    end
+  end
+  popupFrame.updateRoleSelection = function()
+    for i,v in ipairs(popupFrame.roleButtons) do
+      v:SetChecked(select(i+1, GetLFGRoles()))
+    end
+  end
+  hooksecurefunc("SetLFGRoles", popupFrame.updateRoleSelection)
+  popupFrame.updateRoleRewards = function(self)
+    local t = frame.LFG_dungeonIDs[frame.joinLFG_lastDungeonID]
+    if t then
+      for i,v in ipairs(self.roleButtons) do
+        if t[v.role] then
+          v.goldTex:Show()
+        else
+          v.goldTex:Hide()
+        end
+      end
+    end
+  end
+  
   popupFrame.showDialog = function(self, text)
     self.text:SetText(text)
     local newWidth = max(POPUP_MINWIDTH, self.text:GetStringWidth()+4*2)
     self:SetWidth(newWidth)
-    self.buttonsYES:SetPoint("TOPRIGHT", self, "TOPLEFT", newWidth/2-1, -22*2)
-    self.buttonsNO:SetPoint("TOPLEFT", self, "TOPLEFT", newWidth/2+1, -22*2)
+    self.buttonsYES:SetPoint("TOPRIGHT", self, "TOPLEFT", newWidth/2-1, -25*2)
+    self.buttonsNO:SetPoint("TOPLEFT", self, "TOPLEFT", newWidth/2+1, -25*2)
+    
+    self:updateRoleSelection()
+    self:updateYESButtonStatus()
+    self:updateRoleRewards()
+    
     if O.showPopup then
       self:Show()
     end
@@ -653,6 +734,10 @@ function frameEvents:LFG_UPDATE_RANDOM_INFO()
             
             if v["status"] == 1 then
               v["status"] = 2
+              
+              v["TANK"] = forTank
+              v["HEALER"] = forHealer
+              v["DAMAGER"] = forDamage
               
               local name = GetLFGDungeonInfo(k)
               print("|cffaaaaffLFG reward for: "..name)
