@@ -31,7 +31,7 @@ Whenever you have a dungeon selected LFS will tell you when the Call to Arms buf
 
 ![taskbar flash](Screenshots/q1449860534932lk.wowflashtaskbar.jpg)
 
-Ingame you have the option to show a one-click-queue popup which lets you queue for a dungeon without needing to click through the Blizzard UI to find the right dungeon.
+Ingame you have the option to show a one-click-queue popup which lets you queue for a dungeon without needing to click through the Blizzard UI to find the right dungeon. It also shows which roles will get the bonus reward, so you won't accidentally do dungeons without getting a satchel at the end.
 
 ![one click queue](Screenshots/q1503430584149lk.lfs.queue.popup.jpg)
 
