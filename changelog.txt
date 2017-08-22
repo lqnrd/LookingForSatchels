@@ -44,3 +44,6 @@
 * The soundfile will be reset, and with 7.3 will then be a number instead of a string. See updated description for available sound files
 * remove old compat code
 
+2017-08-22 LFS v0.12
+* added role selection boxes to the popup, allowing to easily change which roles to queue for and see which roles reward a satchel
+
