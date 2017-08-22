@@ -31,9 +31,13 @@ Whenever you have a dungeon selected LFS will tell you when the Call to Arms buf
 
 ![taskbar flash](Screenshots/q1449860534932lk.wowflashtaskbar.jpg)
 
-Ingame you have the option to show a one-click-queue popup which lets you queue for a dungeon without needing to click through the Blizzard UI to find the right dungeon. For now, this will queue you using the roles set in the group finder.
+Ingame you have the option to show a one-click-queue popup which lets you queue for a dungeon without needing to click through the Blizzard UI to find the right dungeon.
 
-![one click queue](Screenshots/q1450538474926lk.lfs.queue.popup.jpg)
+![one click queue](Screenshots/q1503430584149lk.lfs.queue.popup.jpg)
+
+You can also select the roles you want to queue with from the popup.
+
+![one click queue roles](Screenshots/q1503430590157lk.lfs.queue.popup.select.roles.jpg)
 
 ## Command Options
 
