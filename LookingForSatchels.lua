@@ -45,6 +45,23 @@ local function MyPlaySound()
   PlaySound(expLeg72 and O.soundName or O.soundId, "master")
 end
 
+local function isAlreadyQueued(dungeonID, lfgCategory)
+  if lfgCategory == "LFD" then
+    if GetLFGMode(LE_LFG_CATEGORY_LFD) then
+      return true
+    end
+  elseif lfgCategory == "Scenario" then
+    if GetLFGMode(LE_LFG_CATEGORY_SCENARIO) then
+      return true
+    end
+  elseif lfgCategory == "RaidFinder" then
+    if GetLFGMode(LE_LFG_CATEGORY_RF, dungeonID) then
+      return true
+    end
+  end
+  return false
+end
+
 local function initFrame()
   frame:SetPoint(O["framePoint"], O["frameRelativeTo"], O["frameRelativePoint"], O["frameOffsetX"], O["frameOffsetY"])
   frame:SetFrameStrata("LOW")
@@ -114,6 +131,11 @@ local function initFrame()
         return
       end
     end
+    
+    if isAlreadyQueued(dungeonID, lfgCategory) then
+      return
+    end
+    
     table.insert(frame.joinLFG_popupQueue, {
       ["dungeonID"] = dungeonID;
       ["lfgCategory"] = lfgCategory;
@@ -714,8 +736,14 @@ function frameEvents:PLAYER_ENTERING_WORLD(...)
   frame:RegisterEvent("PLAYER_REGEN_DISABLED")
   frame:RegisterEvent("PLAYER_REGEN_ENABLED")
   frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+  
+  frame:RegisterEvent("LFG_UPDATE")
 end
 
+function frameEvents:LFG_UPDATE()
+--print("LFG_UPDATE")
+  --
+end
 function frameEvents:LFG_UPDATE_RANDOM_INFO()
   if frame.watchListNotEmpty and O.scanActive == 1 then
     local foundReward = false
@@ -729,35 +757,37 @@ function frameEvents:LFG_UPDATE_RANDOM_INFO()
                 and (forTank and frame.LFG_roles[1]==1 or forHealer and frame.LFG_roles[2]==1 or forDamage and frame.LFG_roles[3]==1) and (itemCount ~= 0 or money ~= 0 or xp ~= 0)
                 and (not O.first or not doneonce)
                 then
-            foundReward = true
-            foundRewardForK = true
-            
-            if v["status"] == 1 then
-              v["status"] = 2
+            if not isAlreadyQueued(k, v["lfgCategory"]) then
+              foundReward = true
+              foundRewardForK = true
               
-              v["TANK"] = forTank
-              v["HEALER"] = forHealer
-              v["DAMAGER"] = forDamage
-              
-              local name = GetLFGDungeonInfo(k)
-              print("|cffaaaaffLFG reward for: "..name)
-              local warningColor = {
-                ["r"] = 0.67;
-                ["g"] = 0.67;
-                ["b"] = 1;
-              };
-              RaidNotice_AddMessage(RaidWarningFrame, "LFG reward for: "..name, warningColor, 10)
-              
-              frame.joinLFG_popupQueue_push(k, v["lfgCategory"])
-              frame.joinLFG_popupQueue_showNext()
-            end
-            
-            if not frame.LFGsearchLastScanFoundReward then
-              FlashClientIcon()
-              if O.playSound then
-                MyPlaySound()
+              if v["status"] == 1 then
+                v["status"] = 2
+                
+                v["TANK"] = forTank
+                v["HEALER"] = forHealer
+                v["DAMAGER"] = forDamage
+                
+                local name = GetLFGDungeonInfo(k)
+                print("|cffaaaaffLFG reward for: "..name)
+                local warningColor = {
+                  ["r"] = 0.67;
+                  ["g"] = 0.67;
+                  ["b"] = 1;
+                };
+                RaidNotice_AddMessage(RaidWarningFrame, "LFG reward for: "..name, warningColor, 10)
+                
+                frame.joinLFG_popupQueue_push(k, v["lfgCategory"])
+                frame.joinLFG_popupQueue_showNext()
               end
-              frame.LFGsearchLastScanFoundReward = true
+              
+              if not frame.LFGsearchLastScanFoundReward then
+                FlashClientIcon()
+                if O.playSound then
+                  MyPlaySound()
+                end
+                frame.LFGsearchLastScanFoundReward = true
+              end
             end
           end
         end
@@ -786,7 +816,6 @@ function frameEvents:PLAYER_REGEN_DISABLED()
     --can't hide in combat
     frame.joinLFG_popupQueue_showNext_afterCombat = true
     popupFrame:Hide()
-    --print("do it later!")
   end
 end
 function frameEvents:PLAYER_REGEN_ENABLED()
