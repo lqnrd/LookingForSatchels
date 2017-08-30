@@ -47,3 +47,8 @@
 2017-08-22 LFS v0.12
 * added role selection boxes to the popup, allowing to easily change which roles to queue for and see which roles reward a satchel
 
+2017-08-30 LFS v0.13
+* will no longer show redundant popups if already in queue for a dungeon/LFR wing, call of arms is deactivated and then activated again while still queued
+* removed pre 7.3 compat code
+* toc bump
+
