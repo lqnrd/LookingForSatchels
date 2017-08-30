@@ -1,5 +1,3 @@
-local expLeg72 = PlaySoundKitID--select(4, GetBuildInfo()) <= 70200
-
 local DefaultO = {
   ["framePoint"] = "CENTER";
   ["frameRelativeTo"] = "UIParent";
@@ -14,7 +12,6 @@ local DefaultO = {
   ["showPopup"] = true;
   ["showFrame"] = 0;
   ["playSound"] = 1;
-  ["soundName"] = "LOOTWINDOWCOINSOUND";
   ["soundId"] = 120; --SOUNDKIT.LOOT_WINDOW_COIN_SOUND
   ["scanActive"] = 1;
   ["LFG_dungeonIDs"] = {
@@ -42,7 +39,7 @@ local POPUP_MINWIDTH = 166
 
 
 local function MyPlaySound()
-  PlaySound(expLeg72 and O.soundName or O.soundId, "master")
+  PlaySound(O.soundId, "master")
 end
 
 local function isAlreadyQueued(dungeonID, lfgCategory)
@@ -694,7 +691,6 @@ function frameEvents:PLAYER_ENTERING_WORLD(...)
   O.addonVersion = GetAddOnMetadata("LookingForSatchels", "Version")
   
   O.playSound = O.playSound or DefaultO.playSound
-  O.soundName = O.soundName or DefaultO.soundName
   O.soundId = O.soundId or DefaultO.soundId
   
   O.scanActive = O.scanActive or DefaultO.scanActive
@@ -964,28 +960,14 @@ SlashCmdList["LOOKINGFORSATCHELS"] = function(msg, editbox)
     print("|cffaaaaffLookingForSatchels |rplaysound |cffaaaaffis "..(O.playSound == 1 and "|cffaaffaaenabled" or "|cffff8888disabled"))
   elseif string.lower(args[1] or "") == "sound" then
     if args[2] then
-      if not expLeg72 then
-        if args[2]:match("^%d+$") then
-          O.soundId = tonumber(args[2])
-          print("|cffaaaaffLookingForSatchels |rsound |cffaaaaffchanged to: |r"..O.soundId)
-        else
-          print("|cffaaaaffLookingForSatchels |rsound |cffaaaaffmust be a number")
-        end
+      if args[2]:match("^%d+$") then
+        O.soundId = tonumber(args[2])
+        print("|cffaaaaffLookingForSatchels |rsound |cffaaaaffchanged to: |r"..O.soundId)
       else
-        if args[2]:match("^%d+$") then
-          O.soundId = tonumber(args[2])
-          print("|cffaaaaffLookingForSatchels |rsound id |cffaaaaffchanged to: |r"..O.soundId)
-        else
-          O.soundName = args[2]
-          print("|cffaaaaffLookingForSatchels |rsound |cffaaaaffchanged to: |r"..O.soundName)
-        end
+        print("|cffaaaaffLookingForSatchels |rsound |cffaaaaffmust be a number")
       end
     else
-      if not expLeg72 then
-        print("|cffaaaaffLookingForSatchels |rsound |cffaaaaffis: |r"..O.soundId)
-      else
-        print("|cffaaaaffLookingForSatchels |rsound |cffaaaaffis: |r"..O.soundName)
-      end
+      print("|cffaaaaffLookingForSatchels |rsound |cffaaaaffis: |r"..O.soundId)
     end
     MyPlaySound()
   elseif string.lower(args[1] or "") == "togglescan" then
@@ -999,7 +981,7 @@ SlashCmdList["LOOKINGFORSATCHELS"] = function(msg, editbox)
     print("  first |cffaaaafftoggle whether require first-run (valor) reward ("..(O.first and "|cffaaffaarequired" or "|cffff8888ignored").."|cffaaaaff)")
     print("  popup |cffaaaafftoggle showing a popup to queue for a dungeon ("..(O.showPopup and "|cffaaffaashown" or "|cffff8888hidden").."|cffaaaaff)")
     print("  playsound |cffaaaafftoggle playing a sound when a satchel is found ("..(O.playSound == 1 and "|cffaaffaaenabled" or "|cffff8888disabled").."|cffaaaaff)")
-    print("  sound [soundName] |cffaaaaffchange or display/listen to sound")
+    print("  sound [soundFile] |cffaaaaffchange or display/listen to sound")
     print("  togglescan |cffaaaaffpause/resume scanning ("..(O.scanActive == 1 and "|cffaaffaaactive" or "|cffff8888paused").."|cffaaaaff)")
   end
 end
