@@ -894,7 +894,7 @@ end
 
 SLASH_LOOKINGFORSATCHELS1 = "/lfs"
 SlashCmdList["LOOKINGFORSATCHELS"] = function(msg, editbox)
-  args = mysplit2(msg or "")
+  local args = mysplit2(msg or "")
   
   if string.lower(args[1] or "") == "move" then
     if moving then
