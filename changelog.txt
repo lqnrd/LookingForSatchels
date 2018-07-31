@@ -52,3 +52,9 @@
 * removed pre 7.3 compat code
 * toc bump
 
+2018-07-14 LFS v0.14
+* remove global overwrites
+
+2018-07-31 LFS v0.15
+* toc bump
+
