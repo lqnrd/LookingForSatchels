@@ -305,18 +305,22 @@ local function initFrame()
     end
   end
   
-  frame.frameLFGSearchButtons = {
-    CreateFrame("Button", nil, LFDQueueFrameTypeDropDown),
-    CreateFrame("Button", nil, ScenarioQueueFrameTypeDropDown),
-    CreateFrame("Button", nil, RaidFinderQueueFrameSelectionDropDown),
+  local frameAnchors = {
+    "LFDQueueFrameTypeDropDown",
+    --"ScenarioQueueFrameTypeDropDown",
+    "RaidFinderQueueFrameSelectionDropDown"
   };
+  frame.frameLFGSearchButtons = {};
   local additionalButtonInfo = {
     "LFD",
-    "Scenario",
+    --"Scenario",
     "RaidFinder",
   };
-  for i, b in ipairs(frame.frameLFGSearchButtons) do
-    b:SetPoint("RIGHT", _G[(b:GetParent():GetName()).."Name"], "RIGHT", -60, 0)
+  for i, frameAnchor in ipairs(frameAnchors) do
+    local b = CreateFrame("Button", nil, _G[frameAnchor])
+    frame.frameLFGSearchButtons[i] = b
+    b:SetPoint("RIGHT", _G[frameAnchor.."Name"], "RIGHT", -60, 0)
+    
     b:SetFrameStrata("DIALOG")
     b:SetWidth(30)
     b:SetHeight(22)
@@ -422,7 +426,7 @@ local function initFrame()
     local ntex = b:CreateTexture()
     ntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
     ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-    ntex:SetAllPoints()	
+    ntex:SetAllPoints() 
     b:SetNormalTexture(ntex)
 
     local htex = b:CreateTexture()
@@ -548,7 +552,7 @@ local function initFrame()
     local ntex = retButton:CreateTexture()
     ntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
     ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-    ntex:SetAllPoints()	
+    ntex:SetAllPoints()
     retButton:SetNormalTexture(ntex)
     
     local htex = retButton:CreateTexture()
