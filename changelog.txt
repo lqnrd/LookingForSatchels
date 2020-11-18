@@ -61,3 +61,6 @@
 2020-10-14 LFS v0.16
 * update for 9.0 prepatch
 
+2020-11-18 LFS v0.17
+* toc bump
+
