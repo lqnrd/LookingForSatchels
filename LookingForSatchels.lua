@@ -19,6 +19,7 @@ local DefaultO = {
     [123] = {
       ["status"] = 1; --on watch list
       ["lfgCategory"] = "LFD";
+      ["dungeonRoles"] = {1, 1, 0}; -- when scanning this specific dungeon, look for Tank and Heal satchels
     };
     [234] = {
       ["status"] = 2; --on watch list and satchel found
@@ -37,6 +38,11 @@ local frameEvents = {};
 local moving = false
 local POPUP_MINWIDTH = 166
 
+local ROLES = {
+  {"Tank","TANK"},
+  {"Heal","HEALER"},
+  {"Damage","DAMAGER"},
+};
 
 local function MyPlaySound()
   PlaySound(O.soundId, "master")
@@ -317,7 +323,7 @@ local function initFrame()
     "RaidFinder",
   };
   for i, frameAnchor in ipairs(frameAnchors) do
-    local b = CreateFrame("Button", nil, _G[frameAnchor])
+    local b = CreateFrame("Button", "LFS_LFGSearchButtons"..i, _G[frameAnchor])
     frame.frameLFGSearchButtons[i] = b
     b:SetPoint("RIGHT", _G[frameAnchor.."Name"], "RIGHT", -60, 0)
     
@@ -328,6 +334,56 @@ local function initFrame()
     
     b.dungeonID = 0
     b.status = 0
+    
+    b.dungeonRoleCheckboxes = {}
+    for j,v in ipairs(ROLES) do
+      local rb = CreateFrame("CheckButton", "LFS_LFGSearchButtons"..i.."RoleCheckButton"..j, b, "ChatConfigCheckButtonTemplate")
+      rb:SetPoint("LEFT", b, "RIGHT", 22*(j-1), 0)
+      b.dungeonRoleCheckboxes[j] = rb
+      _G[(rb:GetName()).."Text"]:SetText("")
+      rb.tag = j
+      rb.role = v[2]
+      rb.buttonRef = b
+      rb.frameRef = frame
+      
+      local roleTex = rb:CreateTexture()
+      rb.roleTex = roleTex
+      roleTex:SetTexture("Interface/LFGFrame/UI-LFG-ICONS-ROLEBACKGROUNDS")
+      roleTex:SetTexCoord(GetBackgroundTexCoordsForRole(v[2]))
+      roleTex:SetPoint("TOPLEFT",rb,"TOPLEFT",4,-4)
+      roleTex:SetPoint("BOTTOMRIGHT",rb,"BOTTOMRIGHT",-4,4)
+      roleTex:SetDrawLayer("BORDER", -1)
+      
+      rb:SetHitRectInsets(0,0,0,0)
+      rb.tooltip = format("When scanning this specific dungeon, look for: \124n\124n%s\124n\124nNot selecting anything will use the roles setup via:\124n\124n/lfs roles", v[1])
+      rb:SetScript("OnClick", function(self)
+        local dungeonRoles = self.frameRef.LFG_dungeonIDs[self.buttonRef.dungeonID].dungeonRoles
+        if not dungeonRoles then
+          if self:GetChecked() then
+            dungeonRoles = {0, 0, 0}
+            dungeonRoles[self.tag] = 1
+            self.frameRef.LFG_dungeonIDs[self.buttonRef.dungeonID].dungeonRoles = dungeonRoles
+          end
+        else
+          if self:GetChecked() then
+            dungeonRoles[self.tag] = 1
+          else
+            dungeonRoles[self.tag] = 0
+            local rolesSelected = false
+            for i, v in ipairs(dungeonRoles) do
+              if v == 1 then
+                rolesSelected = true
+                break
+              end
+            end
+            if not rolesSelected then
+              self.frameRef.LFG_dungeonIDs[self.buttonRef.dungeonID].dungeonRoles = nil
+            end
+          end
+        end
+      end)
+      rb:Hide()
+    end
     
     b.updateStatus = function(self)
       local v = self.frameRef.LFG_dungeonIDs[self.dungeonID]
@@ -343,8 +399,16 @@ local function initFrame()
     b.updateText = function(self)
       if self.status == 0 then
         b:SetText("L+")
+        for i, rb in ipairs(self.dungeonRoleCheckboxes) do
+          rb:Hide()
+        end
       else
         b:SetText("L-")
+        local dungeonRoles = self.frameRef.LFG_dungeonIDs[self.dungeonID].dungeonRoles
+        for i, rb in ipairs(self.dungeonRoleCheckboxes) do
+          rb:Show()
+          rb:SetChecked(dungeonRoles and (dungeonRoles[rb.tag] == 1))
+        end
       end
     end
     b:updateText()
@@ -426,7 +490,7 @@ local function initFrame()
     local ntex = b:CreateTexture()
     ntex:SetTexture("Interface/Buttons/UI-Panel-Button-Up")
     ntex:SetTexCoord(0, 0.625, 0, 0.6875)
-    ntex:SetAllPoints() 
+    ntex:SetAllPoints()	
     b:SetNormalTexture(ntex)
 
     local htex = b:CreateTexture()
@@ -592,12 +656,7 @@ local function initFrame()
   popupFrame.roleButtonsFrame:SetSize(3*(24+22+2),22)
   
   popupFrame.roleButtons = {};
-  local roles = {
-    {"Tank","TANK"},
-    {"Heal","HEALER"},
-    {"Damage","DAMAGER"},
-  };
-  for i,v in ipairs(roles) do
+  for i,v in ipairs(ROLES) do
     local rb = CreateFrame("CheckButton", "LookingForSatchelsRoleCheckButton"..i, popupFrame.roleButtonsFrame, "ChatConfigCheckButtonTemplate")
     rb:SetPoint("TOPLEFT", popupFrame.roleButtonsFrame, "TOPLEFT", (24+22+2)*(i-1), 0)
     popupFrame.roleButtons[i] = rb
@@ -754,7 +813,11 @@ function frameEvents:LFG_UPDATE_RANDOM_INFO()
         for i = 1, LFG_ROLE_NUM_SHORTAGE_TYPES do
           local eligible, forTank, forHealer, forDamage, itemCount, money, xp = GetLFGRoleShortageRewards(k, i)
           if eligible
-                and (forTank and frame.LFG_roles[1]==1 or forHealer and frame.LFG_roles[2]==1 or forDamage and frame.LFG_roles[3]==1) and (itemCount ~= 0 or money ~= 0 or xp ~= 0)
+                and (
+                  (v.dungeonRoles) and (forTank and v.dungeonRoles[1]==1 or forHealer and v.dungeonRoles[2]==1 or forDamage and v.dungeonRoles[3]==1)
+                  or (not v.dungeonRoles) and (forTank and frame.LFG_roles[1]==1 or forHealer and frame.LFG_roles[2]==1 or forDamage and frame.LFG_roles[3]==1)
+                )
+                and (itemCount ~= 0 or money ~= 0 or xp ~= 0)
                 and (not O.first or not doneonce)
                 then
             if not isAlreadyQueued(k, v["lfgCategory"]) then

@@ -67,3 +67,6 @@
 2021-03-10 LFS v0.18
 * toc bump
 
+2022-09-11 LFS v0.19
+* Added dungeon specific role selection. After adding a dungeon/LFR wing to the watch list, select roles you wish to scan for that dungeon only. If no roles are selected, the roles setup via "/lfs roles" will be used.
+
