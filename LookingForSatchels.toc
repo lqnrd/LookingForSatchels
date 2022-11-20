@@ -1,4 +1,4 @@
-## Interface: 90207
+## Interface: 100002
 ## Author: lqnrd
 ## Title: LookingForSatchels
 ## Version: 0.19

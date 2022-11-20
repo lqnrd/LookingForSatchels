@@ -608,6 +608,7 @@ local function initFrame()
     retButton:SetFrameStrata("DIALOG")
     retButton:SetWidth(w)
     retButton:SetHeight(h)
+	retButton:RegisterForClicks("AnyUp", "AnyDown")
     
     retButton:SetText(text)
     retButton:SetNormalFontObject("GameFontNormal")
