@@ -70,3 +70,8 @@
 2022-09-11 LFS v0.19
 * Added dungeon specific role selection. After adding a dungeon/LFR wing to the watch list, select roles you wish to scan for that dungeon only. If no roles are selected, the roles setup via "/lfs roles" will be used.
 
+2022-11-20 LFS v0.20
+* Update for dragonflight, workaround for UI bug
+
+2024-07-24 LFS v0.21
+* update for The War Within

@@ -151,7 +151,7 @@ local function initFrame()
     frame.joinLFG_lastDungeonID = 0
     frame.joinLFG_lastLfgCategory = ""
   end
-  frame.joinLFG_popupQueue_showNext = function()
+  frame.joinLFG_popupQueue_showNext = function(debugForceShow)
     if InCombatLockdown() then
       frame.joinLFG_popupQueue_showNext_afterCombat = true
     elseif IsInGroup() then
@@ -161,7 +161,7 @@ local function initFrame()
       if #frame.joinLFG_popupQueue > 0 then
         local dungeonID = frame.joinLFG_popupQueue[1]["dungeonID"]
         local v = frame.LFG_dungeonIDs[dungeonID]
-        if v and v["status"] and v["status"] == 2 then --still on watch list, and bonus active
+        if v and v["status"] and v["status"] == 2 or debugForceShow then --still on watch list, and bonus active
           frame.joinLFG_lastDungeonID = dungeonID
           frame.joinLFG_lastLfgCategory = frame.joinLFG_popupQueue[1]["lfgCategory"]
           local name = GetLFGDungeonInfo(dungeonID)
@@ -312,9 +312,9 @@ local function initFrame()
   end
   
   local frameAnchors = {
-    "LFDQueueFrameTypeDropDown",
+    "LFDQueueFrameTypeDropdown",
     --"ScenarioQueueFrameTypeDropDown",
-    "RaidFinderQueueFrameSelectionDropDown"
+    "RaidFinderQueueFrameSelectionDropdown"
   };
   frame.frameLFGSearchButtons = {};
   local additionalButtonInfo = {
@@ -322,6 +322,11 @@ local function initFrame()
     --"Scenario",
     "RaidFinder",
   };
+  local dungeonIdSources = {
+    {LFDQueueFrame, "type"},
+    --{"ScenarioQueueFrame?", "?"},
+    {RaidFinderQueueFrame, "raid"},
+  }
   for i, frameAnchor in ipairs(frameAnchors) do
     local b = CreateFrame("Button", "LFS_LFGSearchButtons"..i, _G[frameAnchor])
     frame.frameLFGSearchButtons[i] = b
@@ -414,6 +419,7 @@ local function initFrame()
     b:updateText()
     
     b.lfgCategory = additionalButtonInfo[i]
+    b.dungeonIdSource = dungeonIdSources[i]
     
     b:SetScript("OnClick", function(self, arg1)
       if IsShiftKeyDown() then --add all to watch list
@@ -445,11 +451,12 @@ local function initFrame()
           self:updateText()
         end
       else
+        local selectedValue = self.dungeonIdSource and self.dungeonIdSource[1] and self.dungeonIdSource[1][self.dungeonIdSource[2]]
         if self.status == 0 then
-          self.frameRef.addLFGId((self:GetParent()).selectedValue, self.lfgCategory)
+          self.frameRef.addLFGId(selectedValue, self.lfgCategory)
           self.status = 1
         else
-          self.frameRef.removeLFGId((self:GetParent()).selectedValue)
+          self.frameRef.removeLFGId(selectedValue)
           self.status = 0
         end
         self:updateText()
@@ -608,7 +615,7 @@ local function initFrame()
     retButton:SetFrameStrata("DIALOG")
     retButton:SetWidth(w)
     retButton:SetHeight(h)
-    retButton:RegisterForClicks("LeftButtonUp", "LeftButtonDown") 
+    retButton:RegisterForClicks("LeftButtonUp", "LeftButtonDown")
     
     retButton:SetText(text)
     retButton:SetNormalFontObject("GameFontNormal")
