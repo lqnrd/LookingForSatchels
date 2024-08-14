@@ -87,7 +87,7 @@ local function initFrame()
   end);
   frame:SetScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
-    GameTooltip:AddLine("|cffaaaaffLookingForSatchels "..(GetAddOnMetadata("LookingForSatchels", "Version") or "").."|r")
+    GameTooltip:AddLine("|cffaaaaffLookingForSatchels "..(C_AddOns.GetAddOnMetadata("LookingForSatchels", "Version") or "").."|r")
     
     if O.scanActive == 1 then
       GameTooltip:AddDoubleLine("Scan (shift-click to toggle):", "active", 1, 1, 1, 0.67, 1, 0.67)
@@ -353,8 +353,7 @@ local function initFrame()
       
       local roleTex = rb:CreateTexture()
       rb.roleTex = roleTex
-      roleTex:SetTexture("Interface/LFGFrame/UI-LFG-ICONS-ROLEBACKGROUNDS")
-      roleTex:SetTexCoord(GetBackgroundTexCoordsForRole(v[2]))
+      roleTex:SetAtlas(GetIconForRole(v[2]))
       roleTex:SetPoint("TOPLEFT",rb,"TOPLEFT",4,-4)
       roleTex:SetPoint("BOTTOMRIGHT",rb,"BOTTOMRIGHT",-4,4)
       roleTex:SetDrawLayer("BORDER", -1)
@@ -681,8 +680,7 @@ local function initFrame()
     
     local roleTex = rb:CreateTexture()
     rb.roleTex = roleTex
-    roleTex:SetTexture("Interface/LFGFrame/UI-LFG-ICONS-ROLEBACKGROUNDS")
-    roleTex:SetTexCoord(GetBackgroundTexCoordsForRole(v[2]))
+    roleTex:SetAtlas(GetIconForRole(v[2]))
     roleTex:SetPoint("TOPLEFT",rb,"TOPLEFT",22,0)
     roleTex:SetSize(20,20)
     
@@ -759,7 +757,7 @@ function frameEvents:PLAYER_ENTERING_WORLD(...)
     O.showPopup = true
     print("|cffaaaaffNew version of LookingForSatchels. Watch list has been reset.")
   end
-  O.addonVersion = GetAddOnMetadata("LookingForSatchels", "Version")
+  O.addonVersion = C_AddOns.GetAddOnMetadata("LookingForSatchels", "Version")
   
   O.playSound = O.playSound or DefaultO.playSound
   O.soundId = O.soundId or DefaultO.soundId
@@ -1048,7 +1046,7 @@ SlashCmdList["LOOKINGFORSATCHELS"] = function(msg, editbox)
   elseif string.lower(args[1] or "") == "togglescan" then
     frame.toggleScan()
   else
-    print("|cffaaaaffLookingForSatchels |r"..(GetAddOnMetadata("LookingForSatchels", "Version") or "").." |cffaaaaff(use |r/lfs <option> |cffaaaafffor these options)")
+    print("|cffaaaaffLookingForSatchels |r"..(C_AddOns.GetAddOnMetadata("LookingForSatchels", "Version") or "").." |cffaaaaff(use |r/lfs <option> |cffaaaafffor these options)")
     print("  move |cffaaaafftoggle moving the frame ("..(moving == true and "|cffaaffaamoving" or "|cffff8888fixed").."|cffaaaaff)")
     print("  reset |cffaaaaffreset the frame's position")
     print("  show/hide |cffaaaaffshow/hide the indicator ("..(O.showFrame == 1 and "|cffaaffaashown" or "|cffff8888hidden").."|cffaaaaff)")

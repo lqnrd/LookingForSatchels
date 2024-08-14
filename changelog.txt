@@ -75,3 +75,6 @@
 
 2024-07-24 LFS v0.21
 * update for The War Within
+
+2024-08-14 LFS v0.22
+* update for 11.0.2 API changes
