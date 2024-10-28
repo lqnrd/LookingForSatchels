@@ -162,10 +162,17 @@ local function initFrame()
         local dungeonID = frame.joinLFG_popupQueue[1]["dungeonID"]
         local v = frame.LFG_dungeonIDs[dungeonID]
         if v and v["status"] and v["status"] == 2 or debugForceShow then --still on watch list, and bonus active
+          local numEncounters, numCompleted = GetLFGDungeonNumEncounters(dungeonID)
+
           frame.joinLFG_lastDungeonID = dungeonID
           frame.joinLFG_lastLfgCategory = frame.joinLFG_popupQueue[1]["lfgCategory"]
           local name = GetLFGDungeonInfo(dungeonID)
-          popupFrame:showDialog("Queue for:\124n"..name)
+
+          if numCompleted and numEncounters > 0 then
+            popupFrame:showDialog(format("Queue for:\124n%s\124n%s/%s boss(es) already looted", name, numCompleted, numEncounters))
+          else
+            popupFrame:showDialog(format("Queue for:\124n%s", name))
+          end
         else
           frame.joinLFG_popupQueue_pop()
           frame.joinLFG_popupQueue_showNext()
@@ -570,10 +577,9 @@ local function initFrame()
   --------------------
   --popup frame
   --------------------
-  
   popupFrame:SetPoint(O.framePointPopup, O.frameRelativeToPopup, O.frameRelativePointPopup, O.frameOffsetXPopup, O.frameOffsetYPopup)
   popupFrame:SetFrameStrata("DIALOG")
-  popupFrame:SetSize(POPUP_MINWIDTH, 70+22)
+  popupFrame:SetSize(POPUP_MINWIDTH, 82+22)
   popupFrame:EnableMouse(true)
   
   popupFrame:SetScript("OnDragStart", function(self) self:StartMoving(); end);
@@ -605,7 +611,7 @@ local function initFrame()
   popupFrame.bottomText:SetTextColor(0.7, 0.7, 0.7, 1)
   
   POPUP_MINWIDTH = max(POPUP_MINWIDTH, popupFrame.bottomText:GetStringWidth()+2)
-  popupFrame:SetSize(POPUP_MINWIDTH, 70+22)  
+  popupFrame:SetSize(POPUP_MINWIDTH, 82+22)  
   popupFrame:Hide()
   
   local newButton = function(parent, posSelf, posRelativeTo, posRelative, ox, oy, w, h, text)
@@ -649,8 +655,8 @@ local function initFrame()
     return retButton
   end
   
-  popupFrame.buttonsYES = newButton(popupFrame, "TOPRIGHT", popupFrame, "TOPLEFT", POPUP_MINWIDTH/2-1, -26*2, 80, 22, "Yes")
-  popupFrame.buttonsNO = newButton(popupFrame, "TOPLEFT", popupFrame, "TOPLEFT", POPUP_MINWIDTH/2+1, -26*2, 80, 22, "No")
+  popupFrame.buttonsYES = newButton(popupFrame, "TOPRIGHT", popupFrame, "TOPLEFT", POPUP_MINWIDTH/2-1, -26*2-12, 80, 22, "Yes")
+  popupFrame.buttonsNO = newButton(popupFrame, "TOPLEFT", popupFrame, "TOPLEFT", POPUP_MINWIDTH/2+1, -26*2-12, 80, 22, "No")
   
   popupFrame.buttonsYES:SetAttribute("type", "macro")
   popupFrame.buttonsYES:SetAttribute("macrotext", [[/run LookingForSatchelsFrame.joinLFG(LookingForSatchelsFrame.joinLFG_lastDungeonID, LookingForSatchelsFrame.joinLFG_lastLfgCategory, IsShiftKeyDown())]])
@@ -659,7 +665,7 @@ local function initFrame()
   popupFrame.buttonsNO:SetAttribute("macrotext", [[/run LookingForSatchelsFrame.dequeueJoinLFG(LookingForSatchelsFrame.joinLFG_lastDungeonID, LookingForSatchelsFrame.joinLFG_lastLfgCategory, IsShiftKeyDown())]])
   
   popupFrame.roleButtonsFrame = CreateFrame("Frame", nil, popupFrame)
-  popupFrame.roleButtonsFrame:SetPoint("TOP", popupFrame, "TOP", 0, -29)
+  popupFrame.roleButtonsFrame:SetPoint("TOP", popupFrame, "TOP", 0, -41)
   popupFrame.roleButtonsFrame:SetSize(3*(24+22+2),22)
   
   popupFrame.roleButtons = {};
@@ -725,8 +731,8 @@ local function initFrame()
     self.text:SetText(text)
     local newWidth = max(POPUP_MINWIDTH, self.text:GetStringWidth()+4*2)
     self:SetWidth(newWidth)
-    self.buttonsYES:SetPoint("TOPRIGHT", self, "TOPLEFT", newWidth/2-1, -25*2)
-    self.buttonsNO:SetPoint("TOPLEFT", self, "TOPLEFT", newWidth/2+1, -25*2)
+    self.buttonsYES:SetPoint("TOPRIGHT", self, "TOPLEFT", newWidth/2-1, -25*2 - 12)
+    self.buttonsNO:SetPoint("TOPLEFT", self, "TOPLEFT", newWidth/2+1, -25*2 - 12)
     
     self:updateRoleSelection()
     self:updateYESButtonStatus()
