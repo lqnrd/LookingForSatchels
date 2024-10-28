@@ -167,7 +167,12 @@ local function initFrame()
           frame.joinLFG_lastDungeonID = dungeonID
           frame.joinLFG_lastLfgCategory = frame.joinLFG_popupQueue[1]["lfgCategory"]
           local name = GetLFGDungeonInfo(dungeonID)
-          popupFrame:showDialog("Queue for:\124n"..name.."\124n"..numCompleted.." boss(es) done")
+
+          if numCompleted and numEncounters > 0 then
+            popupFrame:showDialog(format("Queue for:\124n%s\124n%s/%s boss(es) already looted", name, numCompleted, numEncounters))
+          else
+            popupFrame:showDialog(format("Queue for:\124n%s", name))
+          end
         else
           frame.joinLFG_popupQueue_pop()
           frame.joinLFG_popupQueue_showNext()
@@ -572,7 +577,6 @@ local function initFrame()
   --------------------
   --popup frame
   --------------------
-  
   popupFrame:SetPoint(O.framePointPopup, O.frameRelativeToPopup, O.frameRelativePointPopup, O.frameOffsetXPopup, O.frameOffsetYPopup)
   popupFrame:SetFrameStrata("DIALOG")
   popupFrame:SetSize(POPUP_MINWIDTH, 82+22)
@@ -651,8 +655,8 @@ local function initFrame()
     return retButton
   end
   
-  popupFrame.buttonsYES = newButton(popupFrame, "TOPRIGHT", popupFrame, "TOPLEFT", POPUP_MINWIDTH/2-1, -38*2, 80, 22, "Yes")
-  popupFrame.buttonsNO = newButton(popupFrame, "TOPLEFT", popupFrame, "TOPLEFT", POPUP_MINWIDTH/2+1, -38*2, 80, 22, "No")
+  popupFrame.buttonsYES = newButton(popupFrame, "TOPRIGHT", popupFrame, "TOPLEFT", POPUP_MINWIDTH/2-1, -26*2-12, 80, 22, "Yes")
+  popupFrame.buttonsNO = newButton(popupFrame, "TOPLEFT", popupFrame, "TOPLEFT", POPUP_MINWIDTH/2+1, -26*2-12, 80, 22, "No")
   
   popupFrame.buttonsYES:SetAttribute("type", "macro")
   popupFrame.buttonsYES:SetAttribute("macrotext", [[/run LookingForSatchelsFrame.joinLFG(LookingForSatchelsFrame.joinLFG_lastDungeonID, LookingForSatchelsFrame.joinLFG_lastLfgCategory, IsShiftKeyDown())]])
