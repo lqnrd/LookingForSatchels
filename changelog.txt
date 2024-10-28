@@ -78,3 +78,6 @@
 
 2024-08-14 LFS v0.22
 * update for 11.0.2 API changes
+
+2024-10-28 LFS v0.23
+* Added a "bosses done" recap line to queue popup
