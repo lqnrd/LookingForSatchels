@@ -81,3 +81,7 @@
 
 2024-10-28 LFS v0.23
 * Added a "bosses done" recap line to queue popup
+
+2025-11-19 LFS v12.0
+* toc bump, version bump
+* feels fine in beta, bumped version number to match WoW's version
